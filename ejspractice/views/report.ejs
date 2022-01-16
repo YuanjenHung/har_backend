@@ -1,0 +1,159 @@
+<%- include('partials/head') %> 
+<%- include('partials/nav') %> 
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-xl-2 d-md-block bg-light  sticky-top collapse sidebar" style="top: 75px;">
+      <div class="sticky-top pt-3 pb-3" style="top: 75px;">
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item mb-1">
+            <a class="nav-link link-dark" aria-current="page" href="/dashboard">
+			  <span class="fas fa-th-large me-2"></span>
+              Dashboard
+            </a>
+
+          </li>
+          <li class="nav-item mb-1">
+            <a class="nav-link link-dark " href="/data">
+              <span class="fas fa-home me-2"></span>
+              Ambient data
+            </a>
+          </li>
+          <li class="nav-item mb-1">
+            <a class="nav-link active" href="#">
+              <span class="fas fa-heartbeat me-2"></span>
+              Health report
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="col-md-9 col-xl-10 ms-sm-auto p-5" style="min-height: calc(100vh - 80px)">
+      <div class="row">
+        <h3 class="col-xs-12 display-6 mb-4">Bedroom Weather</h3>
+      </div>
+      <div class="row">
+        <a class="col-xs-12 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseBedLight" role="button" aria-expanded="false" aria-controls="collapseBedLight">
+          <div class="card card-body rounded shadow">
+            <div class="card-body">
+              <h1 id="bulb_bedroom" class="fas fa-lightbulb"></h3>
+              <p  id="bulb_bedroom_desc"class="card-text lead mt-1">Currently inside the Bedroom is dark and the light left turn off</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseBedLight">
+              <canvas id="bedLightChart"></canvas>
+            </div>
+          </div>
+        </a>
+        <a class="col-sm-12 col-lg-6 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseBedTemp" role="button" aria-expanded="false" aria-controls="collapseBedTemp">
+          <div class="card card-body rounded shadow">
+            <h3 class="fas fa-thermometer-half card-img-top"></h3>
+            <div class="card-body">
+              <h1 id="temp_bedroom" class="card-title display-4">24°C</h5>
+              <p class="card-text lead">Temperature</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseBedTemp">
+              <canvas id="bedTempChart"></canvas>
+            </div>
+          </div>
+        </a>
+        <a class="col-sm-12 col-lg-6 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseBedHumi" role="button" aria-expanded="false" aria-controls="collapseBedHumi">
+          <div class="card card-body rounded shadow">
+            <h3 class="fas fa-tint card-img-top"></h3>
+            <div class="card-body">
+              <h1 id="humi_bedroom" class="card-title display-4">45%</h5>
+              <p class="card-text lead">Humidity</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseBedHumi">
+              <canvas id="bedHumiChart"></canvas>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="row">
+        <h3 class="col-xs-12 display-6 my-4">Bathroom Weather</h3>
+      </div>
+      <div class="row">
+        <a class="col-xs-12 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseBathLight" role="button" aria-expanded="false" aria-controls="collapseBathLight">
+          <div class="card card-body rounded shadow">
+            <div class="card-body">
+              <h1 id="bulb_bathroom" class="fas fa-lightbulb"></h3>
+              <p  id="bulb_bathroom_desc"class="card-text lead mt-1">Currently inside the Bathroom is dark and the light left turn off</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseBathLight">
+              <canvas id="bathLightChart"></canvas>
+            </div>
+          </div>
+        </a>
+        <a class="col-sm-12 col-lg-6 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseBathTemp" role="button" aria-expanded="false" aria-controls="collapseBathTemp">
+          <div class="card card-body rounded shadow">
+            <h3 class="fas fa-thermometer-half card-img-top"></h3>
+            <div class="card-body">
+              <h1 id="temp_bathroom" class="card-title display-4">24°C</h5>
+              <p class="card-text lead">Temperature</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseBathTemp">
+              <canvas id="bathTempChart"></canvas>
+            </div>
+          </div>
+        </a>
+        <a class="col-sm-12 col-lg-6 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseBathHumi" role="button" aria-expanded="false" aria-controls="collapseBathHumi">
+          <div class="card card-body rounded shadow">
+            <h3 class="fas fa-tint card-img-top"></h3>
+            <div class="card-body">
+              <h1 id="humi_bathroom" class="card-title display-4">45%</h5>
+              <p class="card-text lead">Humidity</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseBathHumi">
+              <canvas id="bathHumiChart"></canvas>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="row">
+        <h3 class="col-xs-12 display-6 my-4">Kitchen Weather</h3>
+      </div>
+      <div class="row">
+        <a class="col-xs-12 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseKitLight" role="button" aria-expanded="false" aria-controls="collapseKitLight">
+          <div class="card card-body rounded shadow">
+            <div class="card-body">
+              <h1 id="bulb_kitchen" class="fas fa-lightbulb"></h3>
+              <p  id="bulb_kitchen_desc"class="card-text lead mt-1">Currently inside the Kitchen is dark and the light left turn off</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseKitLight">
+              <canvas id="kitLightChart"></canvas>
+            </div>
+          </div>
+        </a>
+        <a class="col-sm-12 col-lg-6 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseKitTemp" role="button" aria-expanded="false" aria-controls="collapseKitTemp">
+          <div class="card card-body rounded shadow">
+            <h3 class="fas fa-thermometer-half card-img-top"></h3>
+            <div class="card-body">
+              <h1 id="temp_kitchen" class="card-title display-4">24°C</h5>
+              <p class="card-text lead">Temperature</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseKitTemp">
+              <canvas id="kitTempChart"></canvas>
+            </div>
+          </div>
+        </a>
+        <a class="col-sm-12 col-lg-6 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseKitHumi" role="button" aria-expanded="false" aria-controls="collapseKitHumi"">
+          <div class="card card-body rounded shadow">
+            <h3 class="fas fa-tint card-img-top"></h3>
+            <div class="card-body">
+              <h1 id="humi_kitchen" class="card-title display-4">45%</h5>
+              <p class="card-text lead">Humidity</p>
+            </div>
+            <div class="collapse mt-2 mb-3" id="collapseKitHumi">
+              <canvas id="kitHumiChart"></canvas>
+            </div>
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('partials/footer') %> 

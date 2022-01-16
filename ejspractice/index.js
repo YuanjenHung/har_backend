@@ -8,6 +8,18 @@ app.get('/', (req, res) => {
     res.render('home');
 })
 
+app.get('/data', (req, res) => {
+    res.render('data');
+})
+
+app.get('/dashboard', (req, res) => {
+    res.render('dashboard');
+})
+
+app.get('/report', (req, res) => {
+    res.render('report');
+})
+
 app.get('/random', (req, res) => {
     const random = Math.floor(Math.random()*10)+1;
     res.render('random', {rand: random});
