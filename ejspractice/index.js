@@ -1,5 +1,7 @@
+const analyResult = require("./assets/js/analyData")
 const express = require("express");
 const app = express();
+analyResult.startQuery();
 
 app.set('view engine', 'ejs');
 app.use(express.static('assets'));
