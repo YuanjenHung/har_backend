@@ -8,63 +8,129 @@ const client = new InfluxDB({url: 'https://eu-central-1-1.aws.cloud2.influxdata.
 
 const queryApi = client.getQueryApi(org)
 
-var usingTimeArr = [];
+var usingBathroomTimeArr = [];
+var usingShowerTimeArr = [];
 
 function queryString(range, measurement, host, aggregateWindow){
     const query = `from(bucket: "HAR_system") |> range(start: ${range}) |> filter(fn: (r) => r["_measurement"] == "${measurement}") |> filter(fn: (r) => r["_field"] == "value") |> filter(fn: (r) => r["host"] == "${host}") |> aggregateWindow(every: ${aggregateWindow}, fn: mean, createEmpty: false)`;
     return query;
 }
 
-function startQuery(){
-    const query = queryString("-1d", "light", "arduino_bathroom", "1m");
-    var lastValue = 0;
-    var start;
-    queryApi.queryRows(query, {
-        next(row, tableMeta) {
-            const o = tableMeta.toObject(row);
-            const date = o._time.slice(0, o._time.indexOf("T"));
-            const timeFormat = o._time.slice(o._time.indexOf("T")+1, o._time.indexOf("Z"));
-            const timeBuffer = timeFormat.split(":");
-            var hour = (+timeBuffer[0] + 1) % 24;
-            var minute = timeBuffer[1];
-            var second = timeBuffer[2];
-
-            if(o._value > 100 && lastValue < 100) {
-                start = {
-                    date: date,
-                    hour: hour,
-                    minute: minute,
-                    second: second
-                };
-                // console.log("--------------------------------");
-            } else if(o._value < 100 && lastValue > 100) {
-                if (hour == 0) hour = 24;
-                usingTimeArr.push({
-                    date: start.date,
-                    time: `${start.hour}:${start.minute}:${start.second}`,
-                    duration: (parseInt(hour) - parseInt(start.hour))*60 + parseInt(minute) - parseInt(start.minute) 
-                });
-                // console.log("--------------------------------");
-            }
-
-            lastValue = o._value;
-
-            // console.log(`${hour}:${minute}:${second}\t${o._measurement}(${o._field}) = ${o._value.toFixed(1)}`);
-        },
-        error(error) {
-            console.error(error)
-            console.log('Finished ERROR')
-        },
-        complete() {
-            console.log('Finished SUCCESS');
-            console.log('-----------Bathroom Using Time analyze------------')
-            for(let timeStamp of usingTimeArr) {
-                console.log(`${timeStamp.date} ${timeStamp.time} for ${timeStamp.duration} min`);
-            }
-        },
-      })
+function queryStringWithDate(measurement, host, aggregateWindow){
+    const timeRangeStart = 1642509120;
+    const timeRangeStop = 1642587573;
+    console.log(timeRangeStart + ", " + timeRangeStop + ", " + typeof timeRangeStart);
+    const query = `from(bucket: "HAR_system") |> range(start: ${timeRangeStart}, stop: now()) |> filter(fn: (r) => r["_measurement"] == "${measurement}") |> filter(fn: (r) => r["_field"] == "value") |> filter(fn: (r) => r["host"] == "${host}") |> aggregateWindow(every: ${aggregateWindow}, fn: mean, createEmpty: false)`;
+    return query;
 }
 
-module.exports = {
-    startQuery: startQuery
-}
+var query = queryString("-1d", "light", "arduino_bathroom", "4m");
+// const query = queryStringWithDate("light", "arduino_bathroom", "4m");
+
+var lastValueBathroom = 0;
+var bathroomStart;
+
+queryApi.queryRows(query, {
+    next(row, tableMeta) {
+        const o = tableMeta.toObject(row);
+        // console.log(`${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+        // console.log(new Date(o._time).getTime());
+        const date = o._time.slice(0, o._time.indexOf("T"));
+        const timeFormat = o._time.slice(o._time.indexOf("T")+1, o._time.indexOf("Z"));
+        const timeBuffer = timeFormat.split(":");
+        var hour = (+timeBuffer[0] + 1) % 24;
+        var minute = timeBuffer[1];
+        var second = timeBuffer[2];
+
+        if(o._value > 50 && lastValueBathroom < 50) {
+            bathroomStart = {
+                date: date,
+                time: timeFormat,
+                hour: hour,
+                minute: minute,
+                second: second
+            };
+            // console.log("--------------------------------");
+        } else if(o._value < 50 && lastValueBathroom > 50) {
+            if (hour == 0 && bathroomStart.hour !== 0) hour = 24;
+            usingBathroomTimeArr.push({
+                date: bathroomStart.date,
+                time: bathroomStart.time,
+                duration: (parseInt(hour) - parseInt(bathroomStart.hour))*60 + parseInt(minute) - parseInt(bathroomStart.minute) 
+            });
+            // console.log("--------------------------------");
+        }
+
+        lastValueBathroom = o._value;
+
+        // console.log(`${hour}:${minute}:${second}\t${o._measurement}(${o._field}) = ${o._value.toFixed(1)}`);
+    },
+    error(error) {
+        console.error(error)
+        console.log('Finished ERROR')
+    },
+    complete() {
+        console.log('Finished SUCCESS');
+        console.log('-----------Bathroom Using Time analyze------------')
+        for(let timeStamp of usingBathroomTimeArr) {
+            console.log(`${timeStamp.date} ${timeStamp.time} for ${timeStamp.duration} min`);
+        }
+    },
+})
+
+query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
+
+var lastValueShower = 0;
+var showerStart;
+
+queryApi.queryRows(query, {
+    next(row, tableMeta) {
+        const o = tableMeta.toObject(row);
+        // console.log(`${o._time} ${o._measurement}: ${o._field}=${o._value}`);
+        // console.log(new Date(o._time).getTime());
+        const date = o._time.slice(0, o._time.indexOf("T"));
+        const timeFormat = o._time.slice(o._time.indexOf("T")+1, o._time.indexOf("Z"));
+        const timeBuffer = timeFormat.split(":");
+        var hour = (+timeBuffer[0] + 1) % 24;
+        var minute = timeBuffer[1];
+        var second = timeBuffer[2];
+
+        if(o._value > 38 && lastValueShower < 38) {
+            showerStart = {
+                date: date,
+                time: timeFormat,
+                hour: hour,
+                minute: minute,
+                second: second
+            };
+            // console.log("--------------------------------");
+        } else if(o._value < 38 && lastValueShower > 38) {
+            if (hour == 0 && showerStart.hour !== 0) hour = 24;
+            usingShowerTimeArr.push({
+                date: showerStart.date,
+                time: showerStart.time,
+                duration: (parseInt(hour) - parseInt(showerStart.hour))*60 + parseInt(minute) - parseInt(showerStart.minute) 
+            });
+            // console.log("--------------------------------");
+        }
+
+        lastValueShower = o._value;
+
+        // console.log(`${hour}:${minute}:${second}\t${o._measurement}(${o._field}) = ${o._value.toFixed(1)}`);
+    },
+    error(error) {
+        console.error(error)
+        console.log('Finished ERROR')
+    },
+    complete() {
+        console.log('Finished SUCCESS');
+        console.log('-----------Shower Time analyze------------')
+        for(let timeStamp of usingShowerTimeArr) {
+            console.log(`${timeStamp.date} ${timeStamp.time} for ${timeStamp.duration} min`);
+        }
+    },
+})
+
+// module.exports = {
+//     startQuery: startQuery
+// }

@@ -111,64 +111,64 @@ const bedTempChart = new Chart(
   configString("Temperature at the past 24h", "rgb(255, 99, 132)", "°C")
 );
 
-fillUpData("-1d", "temperature", "arduino_bedroom", "30m", bedTempChart, "temp_bedroom", " °C");
+fillUpData("-12h", "temperature", "arduino_bedroom", "15m", bedTempChart, "temp_bedroom", " °C");
 
 const bedHumiChart = new Chart(
     document.getElementById('bedHumiChart'),
     configString("Humidity at the past 24h", "rgb(54, 162, 235)", "%")
 );
   
-fillUpData("-1d", "humidity", "arduino_bedroom", "30m", bedHumiChart, "humi_bedroom", " %");
+fillUpData("-12h", "humidity", "arduino_bedroom", "15m", bedHumiChart, "humi_bedroom", " %");
 
 const bedLightChart = new Chart(
     document.getElementById('bedLightChart'),
     configString("Luminance at the past 24h", "rgb(255, 205, 86)", "Lux")
 );
   
-fillUpData("-1d", "light", "arduino_bedroom", "30m", bedLightChart, "bulb_bedroom", " Lux");
+fillUpData("-12h", "light", "arduino_bedroom", "15m", bedLightChart, "bulb_bedroom", " Lux");
 
 // Bathroom
 
 const bathTempChart = new Chart(
     document.getElementById('bathTempChart'),
     configString("Temperature at the past 24h", "rgb(255, 99, 132)", "°C")
-  );
+);
   
-  fillUpData("-1d", "temperature", "arduino_bathroom", "30m", bathTempChart, "temp_bathroom", " °C");
+fillUpData("-12h", "temperature", "arduino_bathroom", "15m", bathTempChart, "temp_bathroom", " °C");
   
-  const bathHumiChart = new Chart(
-      document.getElementById('bathHumiChart'),
-      configString("Humidity at the past 24h", "rgb(54, 162, 235)", "%")
-  );
-    
-  fillUpData("-1d", "humidity", "arduino_bathroom", "30m", bathHumiChart, "humi_bathroom", " %");
-  
-  const bathLightChart = new Chart(
-      document.getElementById('bathLightChart'),
-      configString("Luminance at the past 24h", "rgb(255, 205, 86)", "Lux")
-  );
-    
-  fillUpData("-1d", "light", "arduino_bathroom", "30m", bathLightChart, "bulb_bathroom", " Lux");
+const bathHumiChart = new Chart(
+    document.getElementById('bathHumiChart'),
+    configString("Humidity at the past 24h", "rgb(54, 162, 235)", "%")
+);
 
-  // Kitchen
+fillUpData("-12h", "humidity", "arduino_bathroom", "15m", bathHumiChart, "humi_bathroom", " %");
+
+const bathLightChart = new Chart(
+    document.getElementById('bathLightChart'),
+    configString("Luminance at the past 24h", "rgb(255, 205, 86)", "Lux")
+);
+
+fillUpData("-12h", "light", "arduino_bathroom", "15m", bathLightChart, "bulb_bathroom", " Lux");
+
+// Kitchen
 
 const kitTempChart = new Chart(
-    document.getElementById('kitTempChart'),
-    configString("Temperature at the past 24h", "rgb(255, 99, 132)", "°C")
-  );
-  
-  fillUpData("-1d", "temperature", "arduino_kitchen", "30m", kitTempChart, "temp_kitchen", " °C");
-  
-  const kitHumiChart = new Chart(
-      document.getElementById('kitHumiChart'),
-      configString("Humidity at the past 24h", "rgb(54, 162, 235)", "%")
-  );
-    
-  fillUpData("-1d", "humidity", "arduino_kitchen", "30m", kitHumiChart, "humi_kitchen", " %");
-  
-  const kitLightChart = new Chart(
-      document.getElementById('kitLightChart'),
-      configString("Luminance at the past 24h", "rgb(255, 205, 86)", "Lux")
-  );
-    
-  fillUpData("-1d", "light", "arduino_kitchen", "30m", kitLightChart, "bulb_kitchen", " Lux");
+document.getElementById('kitTempChart'),
+configString("Temperature at the past 24h", "rgb(255, 99, 132)", "°C")
+);
+
+fillUpData("-12h", "temperature", "arduino_kitchen", "15m", kitTempChart, "temp_kitchen", " °C");
+
+const kitHumiChart = new Chart(
+    document.getElementById('kitHumiChart'),
+    configString("Humidity at the past 24h", "rgb(54, 162, 235)", "%")
+);
+
+fillUpData("-12h", "humidity", "arduino_kitchen", "15m", kitHumiChart, "humi_kitchen", " %");
+
+const kitLightChart = new Chart(
+    document.getElementById('kitLightChart'),
+    configString("Luminance at the past 24h", "rgb(255, 205, 86)", "Lux")
+);
+
+fillUpData("-12h", "light", "arduino_kitchen", "15m", kitLightChart, "bulb_kitchen", " Lux");
