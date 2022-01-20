@@ -7,19 +7,36 @@ const org = 'yuanjen.hung@student.supsi.ch'
 const bucket = 'HAR_system'
 
 const client = new InfluxDB({ url, token });
-
 const queryApi = client.getQueryApi(org);
 
+//analysis needs
+const checkPeak = {
+    isStart: checkIsAboveThreshold,
+    isStop: checkIsBelowThreshold
+};
+const checkBasin = {
+    isStart: checkIsBelowThreshold,
+    isStop: checkIsAboveThreshold
+};;
+
+function checkIsAboveThreshold(value, lastValue, threshold){
+    return value > threshold && lastValue < threshold;
+}
+
+function checkIsBelowThreshold(value, lastValue, threshold){
+    return value < threshold && lastValue > threshold;
+}
+
 function queryString(range, measurement, host, aggregateWindow){
-    const query = `from(bucket: "HAR_system") |> range(start: ${range}) |> filter(fn: (r) => r["_measurement"] == "${measurement}") |> filter(fn: (r) => r["_field"] == "value") |> filter(fn: (r) => r["host"] == "${host}") |> aggregateWindow(every: ${aggregateWindow}, fn: mean, createEmpty: false)`;
+    const rangeString = (typeof range == "object") ? `range(start: ${range.startTimestamp}, stop: ${range.stopTimestamp})` : `range(start: ${range})`;
+    const query = `from(bucket: "HAR_system") |> ${rangeString} |> filter(fn: (r) => r["_measurement"] == "${measurement}") |> filter(fn: (r) => r["_field"] == "value") |> filter(fn: (r) => r["host"] == "${host}") |> aggregateWindow(every: ${aggregateWindow}, fn: mean, createEmpty: false)`;
     return query;
 }
 
-function startAnalysis(query, threshold, thresholdType, usage) {
-    var timestampsArr = [];
-    var lastValue = 0;
-    var start = null;
-    var duration = 0;
+function startAnalysis(query, threshold, checkAlgorithm, usage) {
+    var lastValue = null;
+    var startingPoint = null;
+    var recordArr = [];
 
     queryApi.queryRows(query, {
         next(row, tableMeta) {
@@ -27,54 +44,30 @@ function startAnalysis(query, threshold, thresholdType, usage) {
             const date = o._time.slice(0, o._time.indexOf("T"));
             const timeFormat = o._time.slice(o._time.indexOf("T")+1, o._time.indexOf("Z"));
             const timeBuffer = timeFormat.split(":");
-            var hour = ("0"+(+timeBuffer[0] + 1) % 24).slice(-2);
-            var minute = ("0"+timeBuffer[1]).slice(-2);
-            var second = ("0"+timeBuffer[2]).slice(-2);
-            
-            if (thresholdType) {
-                if (o._value > threshold && lastValue < threshold) {
-                    start = {
+            const hour = ("0"+(+timeBuffer[0] + 1) % 24).slice(-2);
+            const minute = ("0"+timeBuffer[1]).slice(-2);
+            const second = ("0"+timeBuffer[2]).slice(-2);
+            if (lastValue !== null) {
+                if (checkAlgorithm.isStart(o._value, lastValue, threshold)) {
+                    startingPoint = {
                         date: date,
                         hour: hour,
                         minute: minute,
                         second: second
                     };
-                } else if (start !== null && o._value < threshold && lastValue > threshold) {
-                    duration = (parseInt(hour)+ (hour < start.hour ? 24 : 0) - parseInt(start.hour))*60 + parseInt(minute) - parseInt(start.minute);
-                    timestampsArr.push({
-                        date: start.date,
-                        time: {hour: start.hour, minute: start.minute, second: start.second},
-                        duration: duration 
+                } else if (startingPoint !== null && checkAlgorithm.isStop(o._value, lastValue, threshold)) {
+                    const duration = (parseInt(hour)+ (hour < startingPoint.hour ? 24 : 0) - parseInt(startingPoint.hour))*60 + parseInt(minute) - parseInt(startingPoint.minute);
+                    if (usage == "sleep" && duration < 270) {}
+                    else recordArr.push({
+                        startDate: startingPoint.date,
+                        startTime: {hour: startingPoint.hour, minute: startingPoint.minute, second: startingPoint.second},
+                        duration: duration,
+                        stopDate: date,
+                        stopTime: {hour: hour, minute: minute, second: second}
                     });
-                    start = null;
-                }
-            } else {
-                if (o._value < threshold && lastValue > threshold) {
-                    start = {
-                        date: date,
-                        hour: hour,
-                        minute: minute,
-                        second: second
-                    };
-                    console.log("--------------------------------");
-                } else if (start !== null && o._value > threshold && lastValue < threshold) {
-                    duration = (parseInt(hour)+ (hour < start.hour ? 24 : 0) - parseInt(start.hour))*60 + parseInt(minute) - parseInt(start.minute);
-                    if (duration > 270) {
-                        timestampsArr.push({
-                            startDate: start.date,
-                            startTime: {hour: start.hour, minute: start.minute, second: start.second},
-                            duration: duration,
-                            stopDate: date,
-                            stopTime: {hour: hour, minute: minute, second: second}
-                        });
-                        console.log(start.hour, start.minute, duration);
-                    }
-                    console.log("--------------------------------");
-                    console.log(start.hour, start.minute, duration);
-                    start = null;
+                    startingPoint = null;
                 }
             }
-            console.log(`${date} ${hour}:${minute}:${second}\t${o._measurement}(${o._field}) = ${o._value.toFixed(1)}`);
             lastValue = o._value;
         },
         error(error) {
@@ -83,49 +76,59 @@ function startAnalysis(query, threshold, thresholdType, usage) {
         },
         complete() {
             console.log('Finished SUCCESS');
-            for(let timeStamp of timestampsArr) {
-                if (usage == "bathroom") {
-                    document.getElementById("times_using_bathroom").innerHTML = timestampsArr.length;
-                    document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.date}</span> <span style="display: inline-block; width: 45px;">${timeStamp.time.hour}:${timeStamp.time.minute}</span> <span style="display: inline-block; width: 75px;">(${timeStamp.duration} min)</span></li>`
-                } else if (usage == "shower"){
-                    document.getElementById("times_using_shower").innerHTML = timestampsArr.length;
-                    document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.date}</span> ${timeStamp.time.hour}:${timeStamp.time.minute}</li>`
-                } else {
-                    document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.startDate}</span> ${timeStamp.startTime.hour}:${timeStamp.startTime.minute}</li>`
-                    document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.stopDate}</span> ${timeStamp.stopTime.hour}:${timeStamp.stopTime.minute}</li>`
-                    document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.startDate}</span> <span style="display: inline-block; width: 46px;">${timeStamp.startTime.hour}:${timeStamp.startTime.minute}</span> <span style="display: inline-block; width: 100px;">(${(timeStamp.duration / 60).toFixed(2)} hours)</span></li>`
-                }
-            }
-            if (usage == "sleep") {
-                const avg = avgTime(timestampsArr);
-                document.getElementById("time_bed").innerHTML = `${avg.avgStartTime}`;
-                document.getElementById("time_wakeup").innerHTML = `${avg.avgStopTime}`;
-                document.getElementById("duration_sleep").innerHTML = `${avg.avgDuration} hours`;
-            }
+            displayResult(usage, recordArr);
         },
     })
 }
 
-function avgTime(timeArr) {
-    var startArr = [];
-    var stopArr = [];
+function displayResult(usage, recordArr){
+    switch (usage) {
+        case "bathroom":
+            for(let record of recordArr) {
+                document.getElementById("times_using_bathroom").innerHTML = recordArr.length;
+                document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> <span style="display: inline-block; width: 45px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 75px;">(${record.duration} min)</span></li>`
+            }
+            break;
+        case "shower":
+            for(let record of recordArr) {
+                document.getElementById("times_using_shower").innerHTML = recordArr.length;
+                document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
+            }
+            break;
+        case "sleep":
+            const avgTime = getAverageTime(recordArr);
+            document.getElementById("time_bed").innerHTML = `${avgTime.avgStartTime}`;
+            document.getElementById("time_wakeup").innerHTML = `${avgTime.avgStopTime}`;
+            document.getElementById("duration_sleep").innerHTML = `${avgTime.avgDuration} hours`;
+            for(let record of recordArr) {
+                document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
+                document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.stopDate}</span> ${record.stopTime.hour}:${record.stopTime.minute}</li>`
+                document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> <span style="display: inline-block; width: 46px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 100px;">(${(record.duration / 60).toFixed(2)} hours)</span></li>`
+            }
+            break;
+    }   
+}
+
+function getAverageTime(recordArr) {
+    var startTimeArr = [];
+    var stopTimeArr = [];
     var totalDuration = 0;
 
-    for (let time of timeArr) {
-        startArr.push(time.startTime);
-        stopArr.push(time.stopTime);
-        totalDuration += time.duration;
+    for (let record of recordArr) {
+        startTimeArr.push(record.startTime);
+        stopTimeArr.push(record.stopTime);
+        totalDuration += record.duration;
     }
     return {
-        avgStartTime: referencePointCalc(startArr, true),
-        avgStopTime: referencePointCalc(stopArr, false),
-        avgDuration: (totalDuration/timeArr.length/60).toFixed(2)
+        avgStartTime: referencePointCalc(startTimeArr, true),
+        avgStopTime: referencePointCalc(stopTimeArr, false),
+        avgDuration: (totalDuration/recordArr.length/60).toFixed(2)
     }
 }
 
 function referencePointCalc(arr, isMidnight){
     var totalDiff = 0;
-    var referencePoint;
+    var referencePoint = null;
 
     for (let timestamp of arr) {
         const hour = parseInt(timestamp.hour);
@@ -135,26 +138,23 @@ function referencePointCalc(arr, isMidnight){
         const diff = (hour - (isMidnight?midnight:noon))*60 + minute;
         totalDiff += diff;
     }
-    const avgDiff = totalDiff/arr.length
+    const avgDiff = totalDiff/arr.length;
 
-    if (isMidnight) {
-        referencePoint = totalDiff < 0 ? 24: 0;
-    } else {
-        referencePoint = 12;
-    }
+    if (isMidnight) referencePoint = avgDiff < 0 ? 24: 0;
+    else referencePoint = 12;
 
     const avgHour = ("0" + Math.floor((referencePoint*60+avgDiff)/60).toString()).slice(-2);
     const avgMinute = ("0" + Math.floor((referencePoint*60+avgDiff)%60).toString()).slice(-2);
-    const avg = `${avgHour}:${avgMinute}`
+    const avgTime = `${avgHour}:${avgMinute}`
 
-    return avg;
+    return avgTime;
 }
 
 var query;
 
 query = queryString("-1d", "light", "arduino_bathroom", "4m");
-startAnalysis(query, 30, true, "bathroom");
+startAnalysis(query, 30, checkPeak, "bathroom");
 query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
-startAnalysis(query, 40, true, "shower");
+startAnalysis(query, 40, checkPeak, "shower");
 query = queryString("-5d", "light", "arduino_bedroom", "15m");
-startAnalysis(query, 5, false, "sleep");
+startAnalysis(query, 5, checkBasin, "sleep");

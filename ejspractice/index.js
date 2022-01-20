@@ -6,15 +6,11 @@ app.set('view engine', 'ejs');
 app.use(express.static('assets'));
 
 app.get('/', (req, res) => {
-    res.render('home');
+    res.render('dashboard');
 })
 
 app.get('/data', (req, res) => {
     res.render('data');
-})
-
-app.get('/dashboard', (req, res) => {
-    res.render('dashboard');
 })
 
 app.get('/report', (req, res) => {
