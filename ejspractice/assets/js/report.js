@@ -56,9 +56,9 @@ function startAnalysis(query, threshold, thresholdType, usage) {
                         minute: minute,
                         second: second
                     };
+                    console.log("--------------------------------");
                 } else if (start !== null && o._value > threshold && lastValue < threshold) {
                     duration = (parseInt(hour)+ (hour < start.hour ? 24 : 0) - parseInt(start.hour))*60 + parseInt(minute) - parseInt(start.minute);
-                    
                     if (duration > 270) {
                         timestampsArr.push({
                             startDate: start.date,
@@ -69,7 +69,9 @@ function startAnalysis(query, threshold, thresholdType, usage) {
                         });
                         console.log(start.hour, start.minute, duration);
                     }
-                    start = null
+                    console.log("--------------------------------");
+                    console.log(start.hour, start.minute, duration);
+                    start = null;
                 }
             }
             console.log(`${date} ${hour}:${minute}:${second}\t${o._measurement}(${o._field}) = ${o._value.toFixed(1)}`);
@@ -84,14 +86,14 @@ function startAnalysis(query, threshold, thresholdType, usage) {
             for(let timeStamp of timestampsArr) {
                 if (usage == "bathroom") {
                     document.getElementById("times_using_bathroom").innerHTML = timestampsArr.length;
-                    document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item">${timeStamp.date} ${timeStamp.time.hour}:${timeStamp.time.minute}:${timeStamp.time.second} for ${timeStamp.duration}\tmin</li>`
+                    document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.date}</span> <span style="display: inline-block; width: 45px;">${timeStamp.time.hour}:${timeStamp.time.minute}</span> <span style="display: inline-block; width: 75px;">(${timeStamp.duration} min)</span></li>`
                 } else if (usage == "shower"){
                     document.getElementById("times_using_shower").innerHTML = timestampsArr.length;
-                    document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item">${timeStamp.date} ${timeStamp.time.hour}:${timeStamp.time.minute}:${timeStamp.time.second}</li>`
+                    document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.date}</span> ${timeStamp.time.hour}:${timeStamp.time.minute}</li>`
                 } else {
-                    document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item">${timeStamp.startDate} ${timeStamp.startTime.hour}:${timeStamp.startTime.minute}:${timeStamp.startTime.second}</li>`
-                    document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item">${timeStamp.stopDate} ${timeStamp.stopTime.hour}:${timeStamp.stopTime.minute}:${timeStamp.stopTime.second}</li>`
-                    document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item">${timeStamp.startDate} ${timeStamp.startTime.hour}:${timeStamp.startTime.minute}:${timeStamp.startTime.second} (${timeStamp.duration / 60} hours)</li>`
+                    document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.startDate}</span> ${timeStamp.startTime.hour}:${timeStamp.startTime.minute}</li>`
+                    document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.stopDate}</span> ${timeStamp.stopTime.hour}:${timeStamp.stopTime.minute}</li>`
+                    document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${timeStamp.startDate}</span> <span style="display: inline-block; width: 46px;">${timeStamp.startTime.hour}:${timeStamp.startTime.minute}</span> <span style="display: inline-block; width: 100px;">(${(timeStamp.duration / 60).toFixed(2)} hours)</span></li>`
                 }
             }
             if (usage == "sleep") {
@@ -117,7 +119,7 @@ function avgTime(timeArr) {
     return {
         avgStartTime: referencePointCalc(startArr, true),
         avgStopTime: referencePointCalc(stopArr, false),
-        avgDuration: totalDuration/timeArr.length/60
+        avgDuration: (totalDuration/timeArr.length/60).toFixed(2)
     }
 }
 
@@ -155,4 +157,4 @@ startAnalysis(query, 30, true, "bathroom");
 query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
 startAnalysis(query, 40, true, "shower");
 query = queryString("-5d", "light", "arduino_bedroom", "15m");
-startAnalysis(query, 10, false, "sleep");
+startAnalysis(query, 5, false, "sleep");
