@@ -33,7 +33,13 @@ function queryString(range, measurement, host, aggregateWindow){
     return query;
 }
 
+
+function convertTZ(date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+}
+
 function startAnalysis(query, threshold, checkAlgorithm, usage) {
+    console.log(checkAlgorithm);
     var lastValue = null;
     var startingPoint = null;
     var recordArr = [];
@@ -41,20 +47,24 @@ function startAnalysis(query, threshold, checkAlgorithm, usage) {
     queryApi.queryRows(query, {
         next(row, tableMeta) {
             const o = tableMeta.toObject(row);
-            const date = o._time.slice(0, o._time.indexOf("T"));
-            const timeFormat = o._time.slice(o._time.indexOf("T")+1, o._time.indexOf("Z"));
-            const timeBuffer = timeFormat.split(":");
-            const hour = ("0"+(+timeBuffer[0] + 1) % 24).slice(-2);
-            const minute = ("0"+timeBuffer[1]).slice(-2);
-            const second = ("0"+timeBuffer[2]).slice(-2);
+            const dateFormat = convertTZ(o._time, "Europe/Paris");
+            const date = `${dateFormat.getFullYear()}-${dateFormat.getMonth()+1}-${dateFormat.getDate()}`
+            const hour = ("0"+dateFormat.getHours()).slice(-2);
+            const minute = ("0"+dateFormat.getMinutes()).slice(-2);
+            const second = ("0"+dateFormat.getSeconds()).slice(-2);
             if (lastValue !== null) {
                 if (checkAlgorithm.isStart(o._value, lastValue, threshold)) {
-                    startingPoint = {
-                        date: date,
-                        hour: hour,
-                        minute: minute,
-                        second: second
-                    };
+                    console.log(o._value, lastValue, threshold);
+                    if (usage == "sleep" && parseInt(hour) < 22 && parseInt(hour) > 16) {}
+                    else {
+                        startingPoint = {
+                            date: date,
+                            hour: hour,
+                            minute: minute,
+                            second: second
+                        };
+                        console.log("------------start-------------");
+                    }
                 } else if (startingPoint !== null && checkAlgorithm.isStop(o._value, lastValue, threshold)) {
                     const duration = (parseInt(hour)+ (hour < startingPoint.hour ? 24 : 0) - parseInt(startingPoint.hour))*60 + parseInt(minute) - parseInt(startingPoint.minute);
                     if (usage == "sleep" && duration < 270) {}
@@ -65,9 +75,11 @@ function startAnalysis(query, threshold, checkAlgorithm, usage) {
                         stopDate: date,
                         stopTime: {hour: hour, minute: minute, second: second}
                     });
+                    console.log(date, hour, minute, duration, recordArr);
                     startingPoint = null;
                 }
             }
+            console.log(date, hour, minute, o._value, lastValue);
             lastValue = o._value;
         },
         error(error) {
@@ -157,4 +169,4 @@ startAnalysis(query, 30, checkPeak, "bathroom");
 query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
 startAnalysis(query, 40, checkPeak, "shower");
 query = queryString("-5d", "light", "arduino_bedroom", "15m");
-startAnalysis(query, 5, checkBasin, "sleep");
+startAnalysis(query, 7, checkBasin, "sleep");
