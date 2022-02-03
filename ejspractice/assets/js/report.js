@@ -39,7 +39,6 @@ function convertTZ(date, tzString) {
 }
 
 function startAnalysis(query, threshold, checkAlgorithm, usage) {
-    console.log(checkAlgorithm);
     var lastValue = null;
     var startingPoint = null;
     var recordArr = [];
@@ -48,13 +47,16 @@ function startAnalysis(query, threshold, checkAlgorithm, usage) {
         next(row, tableMeta) {
             const o = tableMeta.toObject(row);
             const dateFormat = convertTZ(o._time, "Europe/Paris");
-            const date = `${dateFormat.getFullYear()}-${dateFormat.getMonth()+1}-${dateFormat.getDate()}`
+            const year = dateFormat.getFullYear();
+            const month = ("0"+(dateFormat.getMonth()+1)).slice(-2);
+            const day = ("0"+dateFormat.getDate()).slice(-2);
             const hour = ("0"+dateFormat.getHours()).slice(-2);
             const minute = ("0"+dateFormat.getMinutes()).slice(-2);
             const second = ("0"+dateFormat.getSeconds()).slice(-2);
+            const date = `${year}-${month}-${day}`;
             if (lastValue !== null) {
                 if (checkAlgorithm.isStart(o._value, lastValue, threshold)) {
-                    console.log(o._value, lastValue, threshold);
+                    // console.log(o._value, lastValue, threshold);
                     if (usage == "sleep" && parseInt(hour) < 22 && parseInt(hour) > 16) {}
                     else {
                         startingPoint = {
@@ -75,11 +77,11 @@ function startAnalysis(query, threshold, checkAlgorithm, usage) {
                         stopDate: date,
                         stopTime: {hour: hour, minute: minute, second: second}
                     });
-                    console.log(date, hour, minute, duration, recordArr);
+                    console.log("------------stop-------------");
                     startingPoint = null;
                 }
             }
-            console.log(date, hour, minute, o._value, lastValue);
+            console.log(date, hour, minute, o._value);
             lastValue = o._value;
         },
         error(error) {
@@ -98,13 +100,18 @@ function displayResult(usage, recordArr){
         case "bathroom":
             for(let record of recordArr) {
                 document.getElementById("times_using_bathroom").innerHTML = recordArr.length;
-                document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> <span style="display: inline-block; width: 45px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 75px;">(${record.duration} min)</span></li>`
+                document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> <span style="display: inline-block; width: 45px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 75px;">(${record.duration} min)</span></li>`
             }
             break;
         case "shower":
-            for(let record of recordArr) {
-                document.getElementById("times_using_shower").innerHTML = recordArr.length;
-                document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
+            if (recordArr !== null) {
+                for(let record of recordArr) {
+                    document.getElementById("times_using_shower").innerHTML = recordArr.length;
+                    document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
+                }
+            } else {
+                document.getElementById("times_using_shower").innerHTML = 0;
+                document.getElementById("usingShowerTimeList").innerHTML = `<li class="list-group-item">No shower time detected!</li>`
             }
             break;
         case "sleep":
@@ -113,9 +120,9 @@ function displayResult(usage, recordArr){
             document.getElementById("time_wakeup").innerHTML = `${avgTime.avgStopTime}`;
             document.getElementById("duration_sleep").innerHTML = `${avgTime.avgDuration} hours`;
             for(let record of recordArr) {
-                document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
-                document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.stopDate}</span> ${record.stopTime.hour}:${record.stopTime.minute}</li>`
-                document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 90px;">${record.startDate}</span> <span style="display: inline-block; width: 46px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 100px;">(${(record.duration / 60).toFixed(2)} hours)</span></li>`
+                document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
+                document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.stopDate}</span> ${record.stopTime.hour}:${record.stopTime.minute}</li>`
+                document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> <span style="display: inline-block; width: 46px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 100px;">(${(record.duration / 60).toFixed(2)} hours)</span></li>`
             }
             break;
     }   
@@ -169,4 +176,4 @@ startAnalysis(query, 30, checkPeak, "bathroom");
 query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
 startAnalysis(query, 40, checkPeak, "shower");
 query = queryString("-5d", "light", "arduino_bedroom", "15m");
-startAnalysis(query, 7, checkBasin, "sleep");
+startAnalysis(query, 8, checkBasin, "sleep");
