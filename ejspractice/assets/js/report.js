@@ -100,14 +100,14 @@ function displayResult(usage, recordArr){
         case "bathroom":
             for(let record of recordArr) {
                 document.getElementById("times_using_bathroom").innerHTML = recordArr.length;
-                document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> <span style="display: inline-block; width: 45px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 75px;">(${record.duration} min)</span></li>`
+                document.getElementById("usingBathroomTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 100px;">${record.startDate}</span> <span style="display: inline-block; width: 50px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 75px;">(${record.duration} min)</span></li>`
             }
             break;
         case "shower":
             if (recordArr !== null) {
                 for(let record of recordArr) {
                     document.getElementById("times_using_shower").innerHTML = recordArr.length;
-                    document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
+                    document.getElementById("usingShowerTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 100px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
                 }
             } else {
                 document.getElementById("times_using_shower").innerHTML = 0;
@@ -120,9 +120,9 @@ function displayResult(usage, recordArr){
             document.getElementById("time_wakeup").innerHTML = `${avgTime.avgStopTime}`;
             document.getElementById("duration_sleep").innerHTML = `${avgTime.avgDuration} hours`;
             for(let record of recordArr) {
-                document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
-                document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.stopDate}</span> ${record.stopTime.hour}:${record.stopTime.minute}</li>`
-                document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 110px;">${record.startDate}</span> <span style="display: inline-block; width: 46px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 100px;">(${(record.duration / 60).toFixed(2)} hours)</span></li>`
+                document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 100px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
+                document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 100px;">${record.stopDate}</span> ${record.stopTime.hour}:${record.stopTime.minute}</li>`
+                document.getElementById("durationSleepList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 100px;">${record.startDate}</span> <span style="display: inline-block; width: 50px;">${record.startTime.hour}:${record.startTime.minute}</span> <span style="display: inline-block; width: 75px;">(${(record.duration / 60).toFixed(2)} h)</span></li>`
             }
             break;
     }   
@@ -175,5 +175,5 @@ query = queryString("-1d", "light", "arduino_bathroom", "4m");
 startAnalysis(query, 30, checkPeak, "bathroom");
 query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
 startAnalysis(query, 40, checkPeak, "shower");
-query = queryString("-5d", "light", "arduino_bedroom", "15m");
+query = queryString("-10d", "light", "arduino_bedroom", "15m");
 startAnalysis(query, 8, checkBasin, "sleep");
