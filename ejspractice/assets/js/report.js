@@ -38,61 +38,67 @@ function convertTZ(date, tzString) {
     return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
 }
 
-function startAnalysis(query, threshold, checkAlgorithm, usage) {
+
+async function startAnalysis(query, threshold, checkAlgorithm, usage) {
     var lastValue = null;
     var startingPoint = null;
     var recordArr = [];
 
-    queryApi.queryRows(query, {
-        next(row, tableMeta) {
-            const o = tableMeta.toObject(row);
-            const dateFormat = convertTZ(o._time, "Europe/Paris");
-            const year = dateFormat.getFullYear();
-            const month = ("0"+(dateFormat.getMonth()+1)).slice(-2);
-            const day = ("0"+dateFormat.getDate()).slice(-2);
-            const hour = ("0"+dateFormat.getHours()).slice(-2);
-            const minute = ("0"+dateFormat.getMinutes()).slice(-2);
-            const second = ("0"+dateFormat.getSeconds()).slice(-2);
-            const date = `${year}-${month}-${day}`;
-            if (lastValue !== null) {
-                if (checkAlgorithm.isStart(o._value, lastValue, threshold)) {
-                    // console.log(o._value, lastValue, threshold);
-                    if (usage == "sleep" && parseInt(hour) < 22 && parseInt(hour) > 16) {}
-                    else {
-                        startingPoint = {
-                            date: date,
-                            hour: hour,
-                            minute: minute,
-                            second: second
-                        };
-                        console.log("------------start-------------");
+    let myPromise = new Promise((resolve, reject) => {
+        queryApi.queryRows(query, {
+            next(row, tableMeta) {
+                const o = tableMeta.toObject(row);
+                const dateFormat = convertTZ(o._time, "Europe/Paris");
+                const year = dateFormat.getFullYear();
+                const month = ("0"+(dateFormat.getMonth()+1)).slice(-2);
+                const day = ("0"+dateFormat.getDate()).slice(-2);
+                const hour = ("0"+dateFormat.getHours()).slice(-2);
+                const minute = ("0"+dateFormat.getMinutes()).slice(-2);
+                const second = ("0"+dateFormat.getSeconds()).slice(-2);
+                const date = `${year}-${month}-${day}`;
+                if (lastValue !== null) {
+                    if (checkAlgorithm.isStart(o._value, lastValue, threshold)) {
+                        // console.log(o._value, lastValue, threshold);
+                        if (usage == "sleep" && parseInt(hour) < 22 && parseInt(hour) > 16) {}
+                        else {
+                            startingPoint = {
+                                date: date,
+                                hour: hour,
+                                minute: minute,
+                                second: second
+                            };
+                            console.log("------------start-------------");
+                        }
+                    } else if (startingPoint !== null && checkAlgorithm.isStop(o._value, lastValue, threshold)) {
+                        const duration = (parseInt(hour)+ (hour < startingPoint.hour ? 24 : 0) - parseInt(startingPoint.hour))*60 + parseInt(minute) - parseInt(startingPoint.minute);
+                        if (usage == "sleep" && duration < 270) {}
+                        else recordArr.push({
+                            startDate: startingPoint.date,
+                            startTime: {hour: startingPoint.hour, minute: startingPoint.minute, second: startingPoint.second},
+                            duration: duration,
+                            stopDate: date,
+                            stopTime: {hour: hour, minute: minute, second: second}
+                        });
+                        console.log("------------stop-------------");
+                        startingPoint = null;
                     }
-                } else if (startingPoint !== null && checkAlgorithm.isStop(o._value, lastValue, threshold)) {
-                    const duration = (parseInt(hour)+ (hour < startingPoint.hour ? 24 : 0) - parseInt(startingPoint.hour))*60 + parseInt(minute) - parseInt(startingPoint.minute);
-                    if (usage == "sleep" && duration < 270) {}
-                    else recordArr.push({
-                        startDate: startingPoint.date,
-                        startTime: {hour: startingPoint.hour, minute: startingPoint.minute, second: startingPoint.second},
-                        duration: duration,
-                        stopDate: date,
-                        stopTime: {hour: hour, minute: minute, second: second}
-                    });
-                    console.log("------------stop-------------");
-                    startingPoint = null;
                 }
-            }
-            console.log(date, hour, minute, o._value);
-            lastValue = o._value;
-        },
-        error(error) {
-            console.error(error)
-            console.log('Finished ERROR')
-        },
-        complete() {
-            console.log('Finished SUCCESS');
-            displayResult(usage, recordArr);
-        },
-    })
+                console.log(date, hour, minute, o._value);
+                lastValue = o._value;
+            },
+            error(error) {
+                console.error(error)
+                console.log('Finished ERROR')
+            },
+            complete() {
+                console.log('Finished SUCCESS');
+                resolve("I love You !!");
+                displayResult(usage, recordArr);
+            },
+        })
+    });
+
+    return await myPromise;    
 }
 
 function displayResult(usage, recordArr){
@@ -118,7 +124,7 @@ function displayResult(usage, recordArr){
             const avgTime = getAverageTime(recordArr);
             document.getElementById("time_bed").innerHTML = `${avgTime.avgStartTime}`;
             document.getElementById("time_wakeup").innerHTML = `${avgTime.avgStopTime}`;
-            document.getElementById("duration_sleep").innerHTML = `${avgTime.avgDuration} hours`;
+            document.getElementById("duration_sleep").innerHTML = `${avgTime.avgDuration} Hours`;
             for(let record of recordArr) {
                 document.getElementById("bedTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 100px;">${record.startDate}</span> ${record.startTime.hour}:${record.startTime.minute}</li>`
                 document.getElementById("wakeupTimeList").innerHTML += `<li class="list-group-item"><span style="display: inline-block; width: 100px;">${record.stopDate}</span> ${record.stopTime.hour}:${record.stopTime.minute}</li>`
@@ -172,8 +178,14 @@ function referencePointCalc(arr, isMidnight){
 var query;
 
 query = queryString("-1d", "light", "arduino_bathroom", "4m");
-startAnalysis(query, 30, checkPeak, "bathroom");
-query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
-startAnalysis(query, 40, checkPeak, "shower");
-query = queryString("-10d", "light", "arduino_bedroom", "15m");
-startAnalysis(query, 8, checkBasin, "sleep");
+console.log("----> Start the query!");
+startAnalysis(query, 30, checkPeak, "bathroom").then((value)=>{
+        console.log("----> Finish the query!");
+        console.log(value);
+    }
+)
+
+// query = queryString("-1d", "humidity", "arduino_bathroom", "4m");
+// startAnalysis(query, 40, checkPeak, "shower");
+// query = queryString("-10d", "light", "arduino_bedroom", "15m");
+// startAnalysis(query, 8, checkBasin, "sleep");

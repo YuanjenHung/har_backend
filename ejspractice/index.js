@@ -1,4 +1,4 @@
-// const analyResult = require("./assets/js/analyData")
+const analyResult = require("./assets/js/report_v2")
 const express = require("express");
 const app = express();
 
@@ -14,7 +14,11 @@ app.get('/data', (req, res) => {
 })
 
 app.get('/report', (req, res) => {
-    res.render('report');
+    analyResult.startAnalysis().then((value)=>{
+        console.log(value);
+        res.render('report');
+    });
+    
 })
 
 app.get('/random', (req, res) => {
