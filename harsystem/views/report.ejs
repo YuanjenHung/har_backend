@@ -135,7 +135,9 @@
           <div class="card card-body rounded shadow">
             <h3 class="fas fa-thermometer-half card-img-top"></h3>
             <div class="card-body">
-              <h1 id="temp_sleep" class="card-title display-4">24°C</h1>
+              <h1 id="temp_sleep" class="card-title display-4">
+                <%= avgSleepInfo.temperature %> °C
+              </h1>
               <p class="card-text lead">average temperature during your sleep cycle</p>
             </div>
             <div class="collapse mt-2 mb-3 card-body" id="collapseTempHint">
@@ -147,7 +149,9 @@
           <div class="card card-body rounded shadow">
             <h3 class="fas fa-tint card-img-top"></h3>
             <div class="card-body">
-              <h1 id="humidity_sleep" class="card-title display-4">56%</h1>
+              <h1 id="humidity_sleep" class="card-title display-4">
+                <%= avgSleepInfo.humidity %> % 
+              </h1>
               <p class="card-text lead">average humidity during your sleep cycle</p>
             </div>
             <div class="collapse mt-2 mb-3 card-body" id="collapseHumiHint">

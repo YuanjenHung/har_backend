@@ -12,7 +12,8 @@ const bathroomUsageLogSchema = new mongoose.Schema({
 })
 
 bathroomUsageLogSchema.virtual('duration').get(function(){
-    return (this.stopTime.getTime() - this.startTime.getTime())/1000/60;
+    const milliDiff = this.stopTime.getTime() - this.startTime.getTime();
+    return Math.floor(milliDiff/1000/60);
 })
 
 const BathroomUsageLog = mongoose.model("BathroomUsageLog", bathroomUsageLogSchema);

@@ -88,6 +88,7 @@ function startQuery(query, threshold, checkAlgorithm, usage) {
                 // console.log(`${dateFormat} ${o._measurement}: ${o._field}=${o._value.toFixed(2)}`);   
                 lastValue = o._value; 
                 lastestUpdatePoint = dateFormat;
+                console.log(lastestUpdatePoint);
             },
             error(error) {
                 console.error(error)
@@ -101,7 +102,7 @@ function startQuery(query, threshold, checkAlgorithm, usage) {
                     lastValue: lastValue,
                     usage: usage
                 });
-                console.log(u);
+                // console.log(u);
                 u.save();
                 saveResultToDB(usage, arr);
                 resolve("RESOLVED");
