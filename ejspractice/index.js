@@ -1,4 +1,5 @@
 const {updateDB} = require("./assets/js/updateDB")
+const {calcAvg} = require("./assets/js/calcAvg")
 const express = require("express");
 const app = express();
 const mongoose = require('mongoose');
@@ -43,10 +44,12 @@ app.get('/report', async(req, res) => {
             $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000)
         }
     });
+    const avgSleepInfo = await calcAvg();
     res.render('report', {
         bathroomUsage: bathroomUsage,
         shower: shower,
-        sleep: sleep
+        sleep: sleep,
+        avgSleepInfo: avgSleepInfo
     });
 })
 

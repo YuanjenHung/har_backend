@@ -79,7 +79,9 @@
         <a class="col-xs-12 col-xl-4 mb-4 text-decoration-none link-dark" data-bs-toggle="collapse" href="#collapseSleepDuration" role="button" aria-expanded="false" aria-controls="collapseSleepDuration">
           <div class="card card-body rounded shadow">
             <div class="card-body">
-              <h1 id="duration_sleep" class="card-title display-4">8.35 hours</h1>
+              <h1 id="duration_sleep" class="card-title display-4">
+                <%= avgSleepInfo.duration %> Hours  
+              </h1>
               <p class="card-text lead mt-1">Average sleeping duration</p>
             </div>
             <div class="collapse mt-2 mb-3" id="collapseSleepDuration">
@@ -95,8 +97,10 @@
           <div class="card card-body rounded shadow">
             <h3 class="fas fa-sun card-img-top"></h3>
             <div class="card-body">
-              <h1 id="time_wakeup" class="card-title display-4">9:43</h1>
-              <p class="card-text lead">average waking up time at the past 10 days</p>
+              <h1 id="time_wakeup" class="card-title display-4">
+                <%= avgSleepInfo.stopTime %> 
+              </h1>
+              <p class="card-text lead">average waking up time at the past 7 days</p>
             </div>
             <div class="collapse mt-2 mb-3" id="collapseWakeupTime">
               <ul id="wakeupTimeList" class="list-group list-group-flush"> 
@@ -111,8 +115,10 @@
           <div class="card card-body rounded shadow">
             <h3 class="fas fa-moon card-img-top"></h3>
             <div class="card-body">
-              <h1 id="time_bed" class="card-title display-4">00:45</h1>
-              <p class="card-text lead">average going bed time at the past 10 days</p>
+              <h1 id="time_bed" class="card-title display-4">
+                <%= avgSleepInfo.startTime %> 
+              </h1>
+              <p class="card-text lead">average going bed time at the past 7 days</p>
             </div>
             <div class="collapse mt-2 mb-3" id="collapseBedTime">
               <ul id="bedTimeList" class="list-group list-group-flush"> 
