@@ -5,7 +5,6 @@ const BathroomUsageLog = require('../../models/bathroomUsageLog');
 const ShowerLog = require('../../models/showerLog');
 const SleepLog = require('../../models/sleepLog');
 const {InfluxDB} = require('@influxdata/influxdb-client');
-const { updateOne } = require('../../models/updateLog');
 
 // You can generate an API token from the "API Tokens Tab" in the UI
 const token = 'Smrm037Xfq6s4RzcMRkik81q9S6zO8LY8u6mDxPUyOoFmvlrz9C12P63a2eF_xrrrPR8YoIbEBmavRM1yszdaw=='
