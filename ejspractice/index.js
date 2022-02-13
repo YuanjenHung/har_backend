@@ -1,9 +1,22 @@
-const analyResult = require("./assets/js/report_v2")
+const {updateDB} = require("./assets/js/updateDB")
 const express = require("express");
 const app = express();
+const mongoose = require('mongoose');
+const BathroomUsageLog = require('./models/bathroomUsageLog');
+const ShowerLog = require('./models/showerLog');
+const SleepLog = require('./models/sleepLog');
 
 app.set('view engine', 'ejs');
 app.use(express.static('assets'));
+
+mongoose.connect('mongodb://localhost:27017/har_system')
+    .then(()=>{
+        console.log("connection to db is successful!");
+    })
+    .catch((error)=>{
+        console.log("something went wrong with db connection");
+        console.log(error);
+    });
 
 app.get('/', (req, res) => {
     res.render('dashboard');
@@ -13,26 +26,28 @@ app.get('/data', (req, res) => {
     res.render('data');
 })
 
-app.get('/report', (req, res) => {
-    analyResult.startAnalysis().then((value)=>{
-        console.log(value);
-        res.render('report');
+app.get('/report', async(req, res) => {
+    await updateDB();
+    const bathroomUsage = await BathroomUsageLog.find({
+        startTime: {
+            $gte: new Date(new Date() - 1 * 60 * 60 * 24 * 1000)
+        }
     });
-    
-})
-
-app.get('/random', (req, res) => {
-    const random = Math.floor(Math.random()*10)+1;
-    res.render('random', {rand: random});
-})
-
-app.get('/cats', (req, res) => {
-    const cats = ['Molly', 'Rocket', 'Bubble'];
-    res.render('cats', {cats});
-})
-
-app.get('/r/:subreddits', (req, res) => {
-    res.render('subreddits', {name: req.params.subreddits});
+    const shower = await ShowerLog.find({
+        startTime: {
+            $gte: new Date(new Date() - 1 * 60 * 60 * 24 * 1000)
+        }
+    });
+    const sleep = await SleepLog.find({
+        startTime: {
+            $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000)
+        }
+    });
+    res.render('report', {
+        bathroomUsage: bathroomUsage,
+        shower: shower,
+        sleep: sleep
+    });
 })
 
 app.listen('3000', () => {

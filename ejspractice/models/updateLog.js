@@ -10,6 +10,10 @@ const updateLogSchema = new mongoose.Schema({
     },
     lastValue: {
         type: Number
+    },
+    usage: {
+        type: String,
+        enum: ['shower', 'bathroom', 'sleep']
     }
 })
 

@@ -38,12 +38,16 @@
           <div class="card card-body rounded shadow">
             <h3 class="fas fa-toilet card-img-top"></h3>
             <div class="card-body">
-              <h1 id="times_using_bathroom" class="card-title display-4">3</h1>
+              <h1 id="times_using_bathroom" class="card-title display-4">
+                <%= bathroomUsage.length %> 
+              </h1>
               <p class="card-text lead">times entering bathroom at the past 24 hours</p>
             </div>
             <div class="collapse mt-2 mb-3" id="collapseBathUsingTime">
               <ul id="usingBathroomTimeList" class="list-group list-group-flush"> 
-                <!-- <li class="list-group-item"></li> -->
+                <% for(let r of bathroomUsage) {%> 
+                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <span style="display: inline-block; width: 50px;"><%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></span> <span style="display: inline-block; width: 75px;">(<%= r.duration %>  min)</span></li>
+                <% } %> 
               </ul>
             </div>
           </div>
@@ -52,12 +56,16 @@
           <div class="card card-body rounded shadow">
             <h3 class="fas fa-shower card-img-top"></h3>
             <div class="card-body">
-              <h1 id="times_using_shower" class="card-title display-4">3</h1>
+              <h1 id="times_using_shower" class="card-title display-4">
+                <%= shower.length %> 
+              </h1>
               <p class="card-text lead">times taking shower at the past 24 hours</p>
             </div>
             <div class="collapse mt-2 mb-3" id="collapseShowerTime">
               <ul id="usingShowerTimeList" class="list-group list-group-flush"> 
-                <!-- <li class="list-group-item"></li> -->
+                <% for(let r of shower) {%> 
+                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></li>
+                <% } %>
               </ul>
             </div>
           </div>
@@ -76,7 +84,9 @@
             </div>
             <div class="collapse mt-2 mb-3" id="collapseSleepDuration">
               <ul id="durationSleepList" class="list-group list-group-flush"> 
-                <!-- <li class="list-group-item"></li> -->
+                <% for(let r of sleep) {%> 
+                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <span style="display: inline-block; width: 50px;"><%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></span> <span style="display: inline-block; width: 75px;">(<%= (r.duration/60).toFixed(2) %> h)</span></li>
+                <% } %>
               </ul>
             </div>
           </div>
@@ -90,7 +100,9 @@
             </div>
             <div class="collapse mt-2 mb-3" id="collapseWakeupTime">
               <ul id="wakeupTimeList" class="list-group list-group-flush"> 
-                <!-- <li class="list-group-item"></li> -->
+                <% for(let r of sleep) {%> 
+                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.stopTime.getFullYear() %>-<%= ("0" + (r.stopTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.stopTime.getDate()).slice(-2) %></span> <%= ("0" + r.stopTime.getHours()).slice(-2) %>:<%= ("0" + r.stopTime.getMinutes()).slice(-2) %></li>
+                <% } %>
               </ul>
             </div>
           </div>
@@ -104,7 +116,9 @@
             </div>
             <div class="collapse mt-2 mb-3" id="collapseBedTime">
               <ul id="bedTimeList" class="list-group list-group-flush"> 
-                <!-- <li class="list-group-item"></li> -->
+                <% for(let r of sleep) {%> 
+                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></li>
+                <% } %>
               </ul>
             </div>
           </div>
