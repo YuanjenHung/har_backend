@@ -14,7 +14,7 @@ function queryString(range, measurement, host, aggregateWindow){
     return query;
 }
 
-async function startQuery(query) {
+function startQuery(query) {
     let myPromise = new Promise((resolve, reject) => {
         queryApi.queryRows(query, {
             next(row, tableMeta) {
@@ -27,12 +27,12 @@ async function startQuery(query) {
             },
             complete() {
                 console.log('Finished SUCCESS');
-                resolve("-------->Finish");
+                resolve("RESOLVED");
             },
         })    
     });
 
-    return await myPromise;    
+    return myPromise;    
 }
 
 async function startAnalysis(){
