@@ -7,13 +7,6 @@
       <div class="sticky-top pt-3 pb-3" style="top: 74px;">
         <ul class="nav nav-pills flex-column">
           <li class="nav-item mb-1">
-            <a class="nav-link link-dark" aria-current="page" href="/">
-			  <span class="fas fa-th-large me-2"></span>
-              Dashboard
-            </a>
-
-          </li>
-          <li class="nav-item mb-1">
             <a class="nav-link link-dark " href="/data">
               <span class="fas fa-home me-2"></span>
               Ambient data
@@ -39,14 +32,14 @@
             <h3 class="fas fa-toilet card-img-top"></h3>
             <div class="card-body">
               <h1 id="times_using_bathroom" class="card-title display-4">
-                <%= bathroomUsage.length %> 
+                <%= bathroom.length %> 
               </h1>
               <p class="card-text lead">times entering bathroom at the past 24 hours</p>
             </div>
             <div class="collapse mt-2 mb-3" id="collapseBathUsingTime">
               <ul id="usingBathroomTimeList" class="list-group list-group-flush"> 
-                <% for(let r of bathroomUsage) {%> 
-                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <span style="display: inline-block; width: 50px;"><%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></span> <span style="display: inline-block; width: 75px;">(<%= r.duration %>  min)</span></li>
+                <% for(let r of bathroom) {%> 
+                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <span style="display: inline-block; width: 50px;"><%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></span> <span style="display: inline-block; width: 65px;">(<%= r.duration %>  min)</span></li>
                 <% } %> 
               </ul>
             </div>
@@ -80,14 +73,14 @@
           <div class="card card-body rounded shadow">
             <div class="card-body">
               <h1 id="duration_sleep" class="card-title display-4">
-                <%= avgSleepInfo.duration %> Hours  
+                <%= sleepInfo.duration %> Hours  
               </h1>
               <p class="card-text lead mt-1">Average sleeping duration</p>
             </div>
             <div class="collapse mt-2 mb-3" id="collapseSleepDuration">
               <ul id="durationSleepList" class="list-group list-group-flush"> 
                 <% for(let r of sleep) {%> 
-                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <span style="display: inline-block; width: 50px;"><%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></span> <span style="display: inline-block; width: 75px;">(<%= (r.duration/60).toFixed(2) %> h)</span></li>
+                  <li class="list-group-item"><span style="display: inline-block; width: 95px;"><%= r.startTime.getFullYear() %>-<%= ("0" + (r.startTime.getMonth()+1)).slice(-2) %>-<%= ("0" + r.startTime.getDate()).slice(-2) %></span> <span style="display: inline-block; width: 50px;"><%= ("0" + r.startTime.getHours()).slice(-2) %>:<%= ("0" + r.startTime.getMinutes()).slice(-2) %></span> <span style="display: inline-block; width: 65px;">(<%= (r.duration/60).toFixed(2) %> h)</span></li>
                 <% } %>
               </ul>
             </div>
@@ -98,7 +91,7 @@
             <h3 class="fas fa-sun card-img-top"></h3>
             <div class="card-body">
               <h1 id="time_wakeup" class="card-title display-4">
-                <%= avgSleepInfo.stopTime %> 
+                <%= ("0" + sleepInfo.stopTime.getHours()).slice(-2) %>:<%= ("0" + sleepInfo.stopTime.getMinutes()).slice(-2) %> 
               </h1>
               <p class="card-text lead">average waking up time at the past 7 days</p>
             </div>
@@ -116,7 +109,7 @@
             <h3 class="fas fa-moon card-img-top"></h3>
             <div class="card-body">
               <h1 id="time_bed" class="card-title display-4">
-                <%= avgSleepInfo.startTime %> 
+                <%= ("0" + sleepInfo.startTime.getHours()).slice(-2) %>:<%= ("0" + sleepInfo.startTime.getMinutes()).slice(-2) %> 
               </h1>
               <p class="card-text lead">average going bed time at the past 7 days</p>
             </div>
@@ -136,7 +129,7 @@
             <h3 class="fas fa-thermometer-half card-img-top"></h3>
             <div class="card-body">
               <h1 id="temp_sleep" class="card-title display-4">
-                <%= avgSleepInfo.temperature %> °C
+                <%= sleepInfo.temperature %> °C
               </h1>
               <p class="card-text lead">average temperature during your sleep cycle</p>
             </div>
@@ -150,7 +143,7 @@
             <h3 class="fas fa-tint card-img-top"></h3>
             <div class="card-body">
               <h1 id="humidity_sleep" class="card-title display-4">
-                <%= avgSleepInfo.humidity %> % 
+                <%= sleepInfo.humidity %> % 
               </h1>
               <p class="card-text lead">average humidity during your sleep cycle</p>
             </div>

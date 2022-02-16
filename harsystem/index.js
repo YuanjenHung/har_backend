@@ -1,11 +1,9 @@
-const {updateDB} = require("./assets/js/updateDB")
-const {calcAvgSleepInfo} = require("./assets/js/calcAvgSleepInfo")
+const {analysisAndUpdateDB} = require("./assets/js/analysisAndUpdateDB")
+const {generateSleepInfo} = require("./assets/js/generateSleepInfo")
 const express = require("express");
 const app = express();
 const mongoose = require('mongoose');
-const BathroomUsageLog = require('./models/bathroomUsageLog');
-const ShowerLog = require('./models/showerLog');
-const SleepLog = require('./models/sleepLog');
+const Activity = require('./models/activity');
 
 app.set('view engine', 'ejs');
 app.use(express.static('assets'));
@@ -28,28 +26,31 @@ app.get('/data', (req, res) => {
 })
 
 app.get('/report', async(req, res) => {
-    await updateDB();
-    const bathroomUsage = await BathroomUsageLog.find({
+    await analysisAndUpdateDB();
+    const bathroom = await Activity.find({
         startTime: {
             $gte: new Date(new Date() - 1 * 60 * 60 * 24 * 1000)
-        }
+        },
+        type: 'bathroom'
     });
-    const shower = await ShowerLog.find({
+    const shower = await Activity.find({
         startTime: {
             $gte: new Date(new Date() - 1 * 60 * 60 * 24 * 1000)
-        }
+        },
+        type: 'shower'
     });
-    const sleep = await SleepLog.find({
+    const sleep = await Activity.find({
         startTime: {
             $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000)
-        }
+        },
+        type: 'sleep'
     });
-    const avgSleepInfo = await calcAvgSleepInfo();
+    const sleepInfo = await generateSleepInfo();
     res.render('report', {
-        bathroomUsage: bathroomUsage,
+        bathroom: bathroom,
         shower: shower,
         sleep: sleep,
-        avgSleepInfo: avgSleepInfo
+        sleepInfo: sleepInfo
     });
 })
 
