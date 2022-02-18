@@ -1,5 +1,5 @@
 # ElderlyCare 
-## For you, for them, a better elderly medical support solution.
+### For you, for them, a better elderly medical support solution.
 
 The EHH (Elderly Home Healthcare) project was created to fill the gap between residential and health institutes as a middle layer and bring the resource closer to those resource-constrained areas. This is expected to improve response times, let hospital resources be more reachable and most importantly, make no significant changes to elder’s current life. The aim of this project is to focus on helping elderly patients extend their independent existence in their preferred environments meanwhile off-loading the burden from most health institutes.
 
