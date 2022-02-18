@@ -94,13 +94,15 @@ function startQuery(query, threshold, checkAlgorithm, usage) {
             },
             complete() {
                 console.log('Finished SUCCESS');
-                const u = new Update({
-                    date: lastestUpdatePoint,
-                    startedPoint: startingPoint,
-                    lastValue: lastValue,
-                    usage: usage
-                });
-                u.save();
+                if (lastestUpdatePoint != null) {
+                    const u = new Update({
+                        date: lastestUpdatePoint,
+                        startedPoint: startingPoint,
+                        lastValue: lastValue,
+                        usage: usage
+                    });
+                    u.save();
+                }   
                 resolve("RESOLVED");
             },
         })    

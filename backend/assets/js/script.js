@@ -72,7 +72,7 @@ function fillUpData(range, measurement, host, aggregateWindow, chart, id, unit){
     queryApi.queryRows(query, {
         next(row, tableMeta) {
             const o = tableMeta.toObject(row);
-            const dateFormat = convertTZ(o._time, "Europe/Paris");
+            const dateFormat = convertTZ(o._time, "Europe/Zurich");
             const date = `${dateFormat.getFullYear()}-${dateFormat.getMonth()+1}-${dateFormat.getDate()}`
             const hour = ("0"+dateFormat.getHours()).slice(-2);
             const minute = ("0"+dateFormat.getMinutes()).slice(-2);

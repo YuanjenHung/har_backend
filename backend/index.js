@@ -33,6 +33,7 @@ app.get('/report', async(req, res) => {
         },
         type: 'bathroom'
     });
+    console.log(bathroom);
     const shower = await Activity.find({
         startTime: {
             $gte: new Date(new Date() - 1 * 60 * 60 * 24 * 1000)
