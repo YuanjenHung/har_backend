@@ -88,14 +88,7 @@ function fillUpData(range, measurement, host, aggregateWindow, chart, id, unit){
         complete() {
             console.log('Finished SUCCESS');
             console.log(latestData);
-            if (id.includes("bulb")) {
-                if (latestData > 20) {
-                    document.getElementById(id).classList.add("text-warning");
-                    document.getElementById(id + "_desc").innerHTML = "Currently inside is bright and shine, maybe someone is using!";
-                }
-            } else {
-                document.getElementById(id).innerHTML = latestData + unit;
-            }
+            document.getElementById(id).innerHTML = latestData + unit;
         },
     })
 }
@@ -129,7 +122,7 @@ const bedLightChart = new Chart(
     configString("Luminance at the past 12h", "rgb(255, 205, 86)", "Lux")
 );
   
-fillUpData("-12h", "light", "arduino_bedroom", "15m", bedLightChart, "bulb_bedroom", " Lux");
+fillUpData("-12h", "light", "arduino_bedroom", "15m", bedLightChart, "light_bedroom", " Lux");
 
 // Bathroom
 
@@ -152,7 +145,7 @@ const bathLightChart = new Chart(
     configString("Luminance at the past 12h", "rgb(255, 205, 86)", "Lux")
 );
 
-fillUpData("-12h", "light", "arduino_bathroom", "15m", bathLightChart, "bulb_bathroom", " Lux");
+fillUpData("-12h", "light", "arduino_bathroom", "15m", bathLightChart, "light_bathroom", " Lux");
 
 // Kitchen
 
@@ -175,4 +168,4 @@ const kitLightChart = new Chart(
     configString("Luminance at the past 12h", "rgb(255, 205, 86)", "Lux")
 );
 
-fillUpData("-12h", "light", "arduino_kitchen", "15m", kitLightChart, "bulb_kitchen", " Lux");
+fillUpData("-12h", "light", "arduino_kitchen", "15m", kitLightChart, "light_kitchen", " Lux");

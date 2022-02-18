@@ -4,7 +4,6 @@ const Update = require('../../models/update');
 const Activity = require('../../models/activity');
 const {InfluxDB} = require('@influxdata/influxdb-client');
 
-// You can generate an API token from the "API Tokens Tab" in the UI
 const token = 'Smrm037Xfq6s4RzcMRkik81q9S6zO8LY8u6mDxPUyOoFmvlrz9C12P63a2eF_xrrrPR8YoIbEBmavRM1yszdaw=='
 const org = 'yuanjen.hung@student.supsi.ch'
 const bucket = 'HAR_system'
@@ -71,7 +70,7 @@ function startQuery(query, threshold, checkAlgorithm, usage) {
                         }
                     } else if (startingPoint !== null && checkAlgorithm.isStop(o._value, lastValue, threshold)) {
                         const duration = (now.getTime() - startingPoint.getTime())/1000/60;
-                        if (usage == "sleep" && duration < 270) {}
+                        if (usage == "sleep" && (duration < 270 || duration > 900)) {}
                         else {
                             const r = new Activity({
                                 startTime: startingPoint,
