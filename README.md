@@ -21,13 +21,13 @@ https://docs.google.com/document/d/1pQxPM8ZQ2TOSkoagR6XNTcCAZN8SZjZvNBq3YVQ6v6w/
 2. In order to install all the dependency, you need to make sure you have `node.js` and `npm` installed:
    - If not, you can download `node.js` from here: https://nodejs.org/en/
    - When you downloaded `node.js`, it should already has `npm` installed, so no need to download `npm` seperately!
-4. Open the terminal and make sure you are at `backend` folder, `npm install` all the dependency.
-5. Be sure you install mongo on your computer and have mongo server running at the background.
+3. Open the terminal and make sure you are at `backend` folder, type `npm install` to install all the dependency.
+4. Be sure you install mongo on your computer and have mongo server running at the background.
    - Mac tutorial: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
    - Windows tutorial: https://zarkom.net/blogs/how-to-install-mongodb-for-development-in-windows-3328
-6. Open the terminal again and make sure you are at `backend` folder: `node index.js` start the local server at 3000 port.
-7. Go to the brower and connect to http://localhost:3000/data
-8. You should see the demo web app using our example data.
+5. Open the terminal again and make sure you are at `backend` folder: type `node index.js` to start the local server at 3000 port.
+6. Go to the brower and connect to http://localhost:3000/data
+7. You should see the demo web app using our example data.
 
 ## What if I want to build one using my own InfluxDB data?
 1. In this project, we use one bucket to host all the data we collected from different sensors, we label them with different host name (e.g. arduino_bathroom, arduino_bedroom, arduino_kitchen).
