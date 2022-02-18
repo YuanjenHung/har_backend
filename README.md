@@ -19,7 +19,8 @@ https://docs.google.com/document/d/1pQxPM8ZQ2TOSkoagR6XNTcCAZN8SZjZvNBq3YVQ6v6w/
 ## Quick start
 1. Download the `backend` folder.
 2. In order to install all the dependency, you need to make sure you have `node.js` and `npm` installed:
-   - If not, you can download `node.js` from here: https://nodejs.org/en/download/ which already included `npm` all together in one, so no need to download `npm` again!
+   - If not, you can download `node.js` from here: https://nodejs.org/en/download/ 
+   - When you downloaded `node.js`, it should already has `npm` installed, so no need to download `npm` seperately!
 4. Open the terminal and make sure you are at `backend` folder, `npm install` all the dependency.
 5. `node index.js` start the local server at 3000 port.
 6. Be sure you install mongo on your computer and have mongo server running at the background.
