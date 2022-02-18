@@ -25,7 +25,7 @@ https://docs.google.com/document/d/1pQxPM8ZQ2TOSkoagR6XNTcCAZN8SZjZvNBq3YVQ6v6w/
 4. Be sure you install mongo on your computer and have mongo server running at the background.
    - Mac tutorial: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
    - Windows tutorial: https://zarkom.net/blogs/how-to-install-mongodb-for-development-in-windows-3328
-5. Open the terminal again and make sure you are at `backend` folder: type `node index.js` to start the local server at 3000 port.
+5. Open the terminal again and make sure you are at `backend` folder: type `node index.js` to start the local server.
 6. Go to the brower and connect to http://localhost:3000/data
 7. You should see the demo web app using our example data.
 
